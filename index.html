@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Mechanum Wheel Control via WebBluetooth</title>
+
+        <!-- Webapp settings -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Favion -->
+        <link rel="icon" href="./images/favicon.ico">
+
+        <!-- Stylesheet -->
+        <link href="http://cdn.muicss.com/mui-0.10.0/css/mui.min.css" rel="stylesheet" type="text/css" />
+        <script src="http://cdn.muicss.com/mui-0.10.0/js/mui.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="index.css">
+
+    </head>
+    <body>        
+        <!-- Title -->
+        <div id="titleText" class="titleText"> 
+            Mechanum Wheel Control via WebBluetooth
+        </div>
+
+        <!-- Description -->
+        <div id="descriptionText" class="descriptionText"> 
+            WebBluetooth経由でtoio™コアキューブ2つからなる全方位移動(メカナムホイール)ロボットを制御するツール。<br>
+            A tool enables us to control an omni-directional(by 4 mechanum wheels) robot consisting of 2 toio™Core Cubes via WebBluetooth.
+        </div>
+
+        <!-- Operation -->
+        <table><tr>
+            <!-- Left region: Canvas -->
+            <td>
+                <canvas id="operationCanvas"></canvas>
+            </td>
+
+            <!-- Right region: Text -->
+            <td>
+                <div id="operation" class="operation"> 
+                    <div class="operationTitleText"> 
+                        1. Connect two Cubes.
+                    </div>
+                    <div class="operationContent"> 
+                        <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" id="btConnectCube1">Connect Cube 1</button>
+                        <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" id="btConnectCube2">Connect Cube 2</button>
+                    </div>
+
+                    <div class="operationTitleText"> 
+                        2. Connect Controller & Press Any Key/Button.
+                    </div>
+                    <div class="operationContent"> 
+                        <button class="mui-btn mui-btn--small mui-btn--raised" id="btShowOperation">Show "How to Operate"</button>
+                    </div>
+
+                    <div class="operationTitleText"> 
+                        3. Enjoy!
+                    </div>
+                    <div class="operationContent"> 
+                        <div id="speedText" class="speedText">Max Speed: 40</div>
+                        <input id="speedSlidebar" type="range" min="0" max="100" step="1"/>
+                    </div>
+                </div>
+            </td>
+        </tr></table>
+        
+        <!-- Copywrite -->
+        <div id="copyWriteText" class="copyWriteText"> 
+            <a href="https://github.com/tetunori/MechanumWheelControlWebBluetooth">Hosted on GitHub</a>. Version 0.8.0. Copyright (c) 2020 Tetsunori NAKAYAMA. MIT License.
+        </div>
+
+        <!-- Script -->
+        <script type="text/javascript" src="index.js"></script>
+    </body>
+</html>
