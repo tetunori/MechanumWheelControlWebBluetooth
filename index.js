@@ -120,6 +120,8 @@ const gInputStatus = {
     reset:0.0,
     minusMaxSpeed:0.0,
     plusMaxSpeed:0.0,
+    connectCube1:0.0,
+    connectCube2:0.0,
 }
 const gIS = gInputStatus;
 
@@ -133,6 +135,8 @@ const registerInput = () => {
     const GAMEPAD_RIGHT_AXIS_X = 2;
 
     const GAMEPAD_BT_CIRCLE =  1;
+    const GAMEPAD_BT_SQUARE =  2;
+    const GAMEPAD_BT_TRIAGL =  3;
     const GAMEPAD_BT_L1     =  4;
     const GAMEPAD_BT_R1     =  5;
     const GAMEPAD_BT_L2     =  6;
@@ -255,6 +259,15 @@ const registerInput = () => {
         gIS.plusMaxSpeed = 0;
     }
 
+    // Connect Cubes
+    if( gamePad ){
+        gIS.connectCube1 = gamePad.buttons[ GAMEPAD_BT_SQUARE ].value;
+        gIS.connectCube2 = gamePad.buttons[ GAMEPAD_BT_TRIAGL ].value;
+    }else{
+        gIS.connectCube1 = 0;
+        gIS.connectCube2 = 0;
+    }
+
 }
 
 
@@ -354,6 +367,8 @@ let gPreviousReset = 0.0;
 let gPreviousMinusMaxSpeed = 0.0;
 let gPreviousPlusMaxSpeed = 0.0;
 let gChangeSpeedMode = 0;
+let gPreviousConnectCube1 = 0.0;
+let gPreviousConnectCube2 = 0.0;
 
 const opSettings = () => {
 
@@ -406,6 +421,26 @@ const opSettings = () => {
         }
     }
     gPreviousPlusMaxSpeed = gIS.plusMaxSpeed;
+
+    // connect Cubes 1
+    if( gIS.connectCube1 === 1 ){
+        if( gPreviousConnectCube1 === 0 ){
+            if( document.getElementById( "btConnectCube1" ).disabled === false ){
+                gCubes.head = connectNewCube();
+            }
+        }
+    }
+    gPreviousConnectCube1 = gIS.connectCube1;
+
+    // connect Cubes 2
+    if( gIS.connectCube2 === 1 ){
+        if( gPreviousConnectCube2 === 0 ){
+            if( document.getElementById( "btConnectCube2" ).disabled === false ){
+                gCubes.tail = connectNewCube();
+            }
+        }
+    }
+    gPreviousConnectCube2 = gIS.connectCube2;
 
 }
 
