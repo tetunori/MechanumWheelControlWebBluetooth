@@ -14,6 +14,7 @@ let gRotationDirection = undefined;
 const ROTATION_DIR_LEFT  = 1;
 const ROTATION_DIR_RIGHT = 2;
 
+let gGamePadIndexArray = new Array();
 let gGamePadIndex = undefined;
 let gArrowAngle = undefined;    // ArrowAngle for omni-direction move
 
@@ -27,7 +28,8 @@ if ( window.GamepadEvent ) {
   window.addEventListener( "gamepadconnected", ( event ) => {
     // console.log( "Gamepad connected." );
     // console.log( event.gamepad );
-    gGamePadIndex = event.gamepad.index;
+    gGamePadIndexArray.push( event.gamepad.index );
+    gGamePadIndex = gGamePadIndexArray[0];
   });
 
   window.addEventListener( "gamepaddisconnected", ( event ) => {
@@ -89,6 +91,22 @@ const InputKeyValue = ( keyCode, value ) => {
 
 }
 
+const selectGamePad = () => {
+
+    const GAMEPAD_BT_HOME = 16;
+
+    let gamePad;
+    for( let item of gGamePadIndexArray ){
+        gamePad = navigator.getGamepads()[ item ];
+        if( gamePad.buttons[ GAMEPAD_BT_HOME ].value === 1 ){
+            gGamePadIndex = item;
+            // console.log( "gGamePadIndex: " + gGamePadIndex );
+            break;
+        }
+    }
+
+}
+
 // Procedure on Key Down
 const procKeyDown = ( code ) => {
 
@@ -135,19 +153,19 @@ const registerInput = () => {
     const GAMEPAD_LEFT_AXIS_Y  = 1;
     const GAMEPAD_RIGHT_AXIS_X = 2;
 
-    const GAMEPAD_BT_CROSS  =  0;
-    const GAMEPAD_BT_CIRCLE =  1;
-    const GAMEPAD_BT_SQUARE =  2;
-    const GAMEPAD_BT_TRIAGL =  3;
-    const GAMEPAD_BT_L1     =  4;
-    const GAMEPAD_BT_R1     =  5;
-    const GAMEPAD_BT_L2     =  6;
-    const GAMEPAD_BT_OPTION =  9;
+    const GAMEPAD_BT_0      =  0; // CROSS button, B button 
+    const GAMEPAD_BT_1      =  1; // CIRCLE button, A button
+    const GAMEPAD_BT_2      =  2; // SQUARE button, Y button
+    const GAMEPAD_BT_3      =  3; // TRIANGLE button, X button
+    const GAMEPAD_BT_L1     =  4; // L1 button, L button
+    const GAMEPAD_BT_R1     =  5; // R1 button, R button
+    const GAMEPAD_BT_L2     =  6; // L2 trigger, ZL button 
+    const GAMEPAD_BT_9      =  9; // Option button, + button
     const GAMEPAD_BT_UP     = 12;
     const GAMEPAD_BT_DOWN   = 13;
     const GAMEPAD_BT_LEFT   = 14;
     const GAMEPAD_BT_RIGHT  = 15;
-    const GAMEPAD_BT_PS     = 16;
+    const GAMEPAD_BT_HOME   = 16; // PS button / Home button
 
     // Move: X Axis ( Analog Stick mapping )
     if( getKeyInputValue( KEYCODE_LEFT ) === 1 ){
@@ -234,20 +252,20 @@ const registerInput = () => {
 
     // Speed lever / Change button
     if( gamePad ){
-        gIS.changeMaxSpeed = gamePad.buttons[ GAMEPAD_BT_CIRCLE ].value;
+        gIS.changeMaxSpeed = gamePad.buttons[ GAMEPAD_BT_1 ].value;
         gIS.maxSpeed = gamePad.buttons[ GAMEPAD_BT_L2 ].value;
     }
 
     // Exchange Head/Tail button
     if( gamePad ){ 
-        gIS.exchangeHeadTail = gamePad.buttons[ GAMEPAD_BT_OPTION ].value; 
+        gIS.exchangeHeadTail = gamePad.buttons[ GAMEPAD_BT_9 ].value; 
     }else{
         gIS.exchangeHeadTail = 0;
     }
 
     // Reset button
     if( gamePad ){
-        gIS.reset = gamePad.buttons[ GAMEPAD_BT_PS ].value;
+        gIS.reset = gamePad.buttons[ GAMEPAD_BT_HOME ].value;
     }else{
         gIS.reset = 0;
     }
@@ -263,8 +281,8 @@ const registerInput = () => {
 
     // Connect Cubes
     if( gamePad ){
-        gIS.connectCube1 = gamePad.buttons[ GAMEPAD_BT_SQUARE ].value;
-        gIS.connectCube2 = gamePad.buttons[ GAMEPAD_BT_TRIAGL ].value;
+        gIS.connectCube1 = gamePad.buttons[ GAMEPAD_BT_2 ].value;
+        gIS.connectCube2 = gamePad.buttons[ GAMEPAD_BT_3 ].value;
     }else{
         gIS.connectCube1 = 0;
         gIS.connectCube2 = 0;
@@ -272,7 +290,7 @@ const registerInput = () => {
 
     // Analog Omni-direction movement
     if( gamePad ){
-        gIS.analogOmniMoveDisable = gamePad.buttons[ GAMEPAD_BT_CROSS ].value;
+        gIS.analogOmniMoveDisable = gamePad.buttons[ GAMEPAD_BT_0 ].value;
     }else{
         gIS.analogOmniMoveDisable = 0;
     }
@@ -286,6 +304,7 @@ let gPreviousExecuteTime = undefined;
 
 const updateStatus = () => {
 
+    selectGamePad();
     registerInput();
     opSettings();
 
