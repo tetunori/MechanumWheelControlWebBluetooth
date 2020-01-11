@@ -1,5 +1,5 @@
 # Mechanum Wheel Control via WebBluetooth
-Version 1.0.0 
+Version 1.0.0  
 <img src="./images/screen_10.png" width="640px">
 
 # Description
