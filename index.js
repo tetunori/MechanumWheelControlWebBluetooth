@@ -122,6 +122,7 @@ const gInputStatus = {
     plusMaxSpeed:0.0,
     connectCube1:0.0,
     connectCube2:0.0,
+    analogOmniMoveDisable:0.0,
 }
 const gIS = gInputStatus;
 
@@ -134,6 +135,7 @@ const registerInput = () => {
     const GAMEPAD_LEFT_AXIS_Y  = 1;
     const GAMEPAD_RIGHT_AXIS_X = 2;
 
+    const GAMEPAD_BT_CROSS  =  0;
     const GAMEPAD_BT_CIRCLE =  1;
     const GAMEPAD_BT_SQUARE =  2;
     const GAMEPAD_BT_TRIAGL =  3;
@@ -266,6 +268,13 @@ const registerInput = () => {
     }else{
         gIS.connectCube1 = 0;
         gIS.connectCube2 = 0;
+    }
+
+    // Analog Omni-direction movement
+    if( gamePad ){
+        gIS.analogOmniMoveDisable = gamePad.buttons[ GAMEPAD_BT_CROSS ].value;
+    }else{
+        gIS.analogOmniMoveDisable = 0;
     }
 
 }
@@ -512,7 +521,11 @@ const opRotationRightWheel = () => {
 const opMove = () => {
 
     // Omni-direction logic. See https://qiita.com/tetunori_lego/items/37477c40b16f8eab384f in detail.
-    gArrowAngle = -1 * Math.round( 4 * Math.atan2( gIS.yAxisMove, gIS.xAxisMove) / Math.PI ) * Math.PI/4;
+    if( gIS.analogOmniMoveDisable === 1 ){
+        gArrowAngle = -1 * Math.round( 4 * Math.atan2( gIS.yAxisMove, gIS.xAxisMove) / Math.PI ) * Math.PI/4;
+    }else{
+        gArrowAngle = -1 * Math.atan2( gIS.yAxisMove, gIS.xAxisMove);
+    }
     // console.log( "move. gArrowAngle is " + gArrowAngle );
     gRotationPoint = undefined;
 
@@ -609,13 +622,8 @@ const moveOmniDirection = () => {
     let moveSpeedUpRightDownLeft;
     let moveSpeedUpLeftDownRight;
 
-    if( 0 /* for more analog move */ ){
-        moveSpeedUpRightDownLeft = -1 * Math.round( magnitude * Math.sin( Math.atan2( gIS.yAxisMove, gIS.xAxisMove ) - Math.PI / 4 ) );
-        moveSpeedUpLeftDownRight = -1 * Math.round( magnitude * Math.sin( Math.atan2( gIS.yAxisMove, gIS.xAxisMove ) + Math.PI / 4 ) );
-    }else{
-        moveSpeedUpRightDownLeft = -1 * Math.round( magnitude * Math.sin( gArrowAngle + Math.PI / 4 ) );
-        moveSpeedUpLeftDownRight = -1 * Math.round( magnitude * Math.sin( gArrowAngle - Math.PI / 4 ) );
-    }
+    moveSpeedUpRightDownLeft = -1 * Math.round( magnitude * Math.sin( gArrowAngle + Math.PI / 4 ) );
+    moveSpeedUpLeftDownRight = -1 * Math.round( magnitude * Math.sin( gArrowAngle - Math.PI / 4 ) );
 
     setMotorSpeed( gCubes.head, moveSpeedUpLeftDownRight, moveSpeedUpRightDownLeft );
     setMotorSpeed( gCubes.tail, moveSpeedUpRightDownLeft, moveSpeedUpLeftDownRight );
@@ -824,6 +832,18 @@ const drawArrow = ( context, angle, canvas ) => {
     const h = halfSize = SQUARE_SIZE / 2;
     const q = quarterSize = SQUARE_SIZE / 4;
 
+    // Save context setting
+    ctx.save();
+    if( gIS.analogOmniMoveDisable === 1 ){
+        const FRAME_SQUARE_SIZE = 120;
+        const OFFSET_X = 1;
+        ctx.strokeStyle = "rgba( 255, 0, 0, 1.0 )"
+        ctx.lineWidth = 4;
+        ctx.strokeRect( canvas.width/2 - FRAME_SQUARE_SIZE/2 + OFFSET_X, canvas.height/2 - FRAME_SQUARE_SIZE/2, 
+            FRAME_SQUARE_SIZE, FRAME_SQUARE_SIZE );
+    }
+
+
     // Translation and rotation
     ctx.translate( canvas.width/2 ,canvas.height/2 );
     ctx.rotate( angle );
@@ -844,6 +864,7 @@ const drawArrow = ( context, angle, canvas ) => {
 
     // Reset translation/scale.
     ctx.setTransform( 1, 0, 0, 1, 0, 0 );
+    ctx.restore();
 
 }
 
