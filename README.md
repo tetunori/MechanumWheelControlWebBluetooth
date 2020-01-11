@@ -1,6 +1,6 @@
 # Mechanum Wheel Control via WebBluetooth
 Version 1.0.0  
-<img src="./images/screen_10.png" width="640px">
+<img src="./images/screen_10.png" width="800px">
 
 # Description
 A tool enables us to control an omni-directional(by 4 mechanum wheels) robot consisting of 2 toio™Core Cubes via WebBluetooth.  
@@ -22,7 +22,7 @@ Now, WebBluetooth works on the limited browser/OS. Please check the support stat
 5. Additionally, check the head/tail cube are set correctly by using the method below.
 
 ## Screen Description
-<img src="./images/screen_description.png" width="640px">
+<img src="./images/screen_description.png" width="800px">
 
 ## Operation
 |Category|Key Op.|Gamepad Op.<BR>DUALSHOCK 4/Joy-Con|Screen/UI Example|
@@ -34,8 +34,8 @@ Now, WebBluetooth works on the limited browser/OS. Please check the support stat
 |Exchange Head/Tail|Q key|Option/+ button|Light Head Cube in white.|
 |Reset setting|ESC key|PS/Home button||
 |Select gamepad|N/A|PS/Home button||
-|Adjust speed discretely|-/+ key|L1/R1, L/R button|<img src="./images/204.png" width="300px"><BR>Default value is 60.|
-|Adjust speed continuously|N/A|〇 button + L2 trigger button.<BR>(Joy-Con does not support this function.)|<img src="./images/205.png" width="300px"><BR>You can operate slider directly. |
+|Adjust speed discretely|-/+ key|L1/R1, L/R button|<img src="./images/204.png" width="200px"><BR>Default value is 60.|
+|Adjust speed continuously|N/A|〇 button + L2 trigger button.<BR>(Joy-Con does not support this function.)|<img src="./images/205.png" width="200px"><BR>You can operate slider directly. |
 ## Working demo movie
 (will update...)
 
@@ -46,23 +46,23 @@ This software is released under the MIT License, see LICENSE.
 Tetsunori NAKAYAMA.
 
 # References
-toio™
+toio™  
 https://toio.io/
 
-toio™Core Cube Specification
+toio™Core Cube Specification  
 https://toio.github.io/toio-spec/
 
-HTML5 Gamepad Specification
+HTML5 Gamepad Specification  
 https://www.w3.org/TR/gamepad/
 
 HTML5 Gamepad Tester  
 https://html5gamepad.com/  
 
-Arrow in canvas
+Arrow in canvas  
 http://www.inazumatv.com/contents/archives/7093
 
-Icon
+Icon  
 https://material.io/resources/icons/
 
-UI parts
+UI parts  
 https://www.muicss.com/
