@@ -14,6 +14,7 @@ let gRotationDirection = undefined;
 const ROTATION_DIR_LEFT  = 1;
 const ROTATION_DIR_RIGHT = 2;
 
+let gGamePadIndexArray = new Array();
 let gGamePadIndex = undefined;
 let gArrowAngle = undefined;    // ArrowAngle for omni-direction move
 
@@ -27,7 +28,8 @@ if ( window.GamepadEvent ) {
   window.addEventListener( "gamepadconnected", ( event ) => {
     // console.log( "Gamepad connected." );
     // console.log( event.gamepad );
-    gGamePadIndex = event.gamepad.index;
+    gGamePadIndexArray.push( event.gamepad.index );
+    gGamePadIndex = gGamePadIndexArray[0];
   });
 
   window.addEventListener( "gamepaddisconnected", ( event ) => {
@@ -89,6 +91,22 @@ const InputKeyValue = ( keyCode, value ) => {
 
 }
 
+const selectGamePad = () => {
+
+    const GAMEPAD_BT_HOME = 16;
+
+    let gamePad;
+    for( let item of gGamePadIndexArray ){
+        gamePad = navigator.getGamepads()[ item ];
+        if( gamePad.buttons[ GAMEPAD_BT_HOME ].value === 1 ){
+            gGamePadIndex = item;
+            // console.log( "gGamePadIndex: " + gGamePadIndex );
+            break;
+        }
+    }
+
+}
+
 // Procedure on Key Down
 const procKeyDown = ( code ) => {
 
@@ -120,6 +138,9 @@ const gInputStatus = {
     reset:0.0,
     minusMaxSpeed:0.0,
     plusMaxSpeed:0.0,
+    connectCube1:0.0,
+    connectCube2:0.0,
+    analogOmniMoveDisable:0.0,
 }
 const gIS = gInputStatus;
 
@@ -132,16 +153,19 @@ const registerInput = () => {
     const GAMEPAD_LEFT_AXIS_Y  = 1;
     const GAMEPAD_RIGHT_AXIS_X = 2;
 
-    const GAMEPAD_BT_CIRCLE =  1;
-    const GAMEPAD_BT_L1     =  4;
-    const GAMEPAD_BT_R1     =  5;
-    const GAMEPAD_BT_L2     =  6;
-    const GAMEPAD_BT_OPTION =  9;
+    const GAMEPAD_BT_0      =  0; // CROSS button, B button 
+    const GAMEPAD_BT_1      =  1; // CIRCLE button, A button
+    const GAMEPAD_BT_2      =  2; // SQUARE button, Y button
+    const GAMEPAD_BT_3      =  3; // TRIANGLE button, X button
+    const GAMEPAD_BT_L1     =  4; // L1 button, L button
+    const GAMEPAD_BT_R1     =  5; // R1 button, R button
+    const GAMEPAD_BT_L2     =  6; // L2 trigger, ZL button 
+    const GAMEPAD_BT_9      =  9; // Option button, + button
     const GAMEPAD_BT_UP     = 12;
     const GAMEPAD_BT_DOWN   = 13;
     const GAMEPAD_BT_LEFT   = 14;
     const GAMEPAD_BT_RIGHT  = 15;
-    const GAMEPAD_BT_PS     = 16;
+    const GAMEPAD_BT_HOME   = 16; // PS button / Home button
 
     // Move: X Axis ( Analog Stick mapping )
     if( getKeyInputValue( KEYCODE_LEFT ) === 1 ){
@@ -228,20 +252,20 @@ const registerInput = () => {
 
     // Speed lever / Change button
     if( gamePad ){
-        gIS.changeMaxSpeed = gamePad.buttons[ GAMEPAD_BT_CIRCLE ].value;
+        gIS.changeMaxSpeed = gamePad.buttons[ GAMEPAD_BT_1 ].value;
         gIS.maxSpeed = gamePad.buttons[ GAMEPAD_BT_L2 ].value;
     }
 
     // Exchange Head/Tail button
     if( gamePad ){ 
-        gIS.exchangeHeadTail = gamePad.buttons[ GAMEPAD_BT_OPTION ].value; 
+        gIS.exchangeHeadTail = gamePad.buttons[ GAMEPAD_BT_9 ].value; 
     }else{
         gIS.exchangeHeadTail = 0;
     }
 
     // Reset button
     if( gamePad ){
-        gIS.reset = gamePad.buttons[ GAMEPAD_BT_PS ].value;
+        gIS.reset = gamePad.buttons[ GAMEPAD_BT_HOME ].value;
     }else{
         gIS.reset = 0;
     }
@@ -255,6 +279,22 @@ const registerInput = () => {
         gIS.plusMaxSpeed = 0;
     }
 
+    // Connect Cubes
+    if( gamePad ){
+        gIS.connectCube1 = gamePad.buttons[ GAMEPAD_BT_2 ].value;
+        gIS.connectCube2 = gamePad.buttons[ GAMEPAD_BT_3 ].value;
+    }else{
+        gIS.connectCube1 = 0;
+        gIS.connectCube2 = 0;
+    }
+
+    // Analog Omni-direction movement
+    if( gamePad ){
+        gIS.analogOmniMoveDisable = gamePad.buttons[ GAMEPAD_BT_0 ].value;
+    }else{
+        gIS.analogOmniMoveDisable = 0;
+    }
+
 }
 
 
@@ -264,6 +304,7 @@ let gPreviousExecuteTime = undefined;
 
 const updateStatus = () => {
 
+    selectGamePad();
     registerInput();
     opSettings();
 
@@ -354,6 +395,8 @@ let gPreviousReset = 0.0;
 let gPreviousMinusMaxSpeed = 0.0;
 let gPreviousPlusMaxSpeed = 0.0;
 let gChangeSpeedMode = 0;
+let gPreviousConnectCube1 = 0.0;
+let gPreviousConnectCube2 = 0.0;
 
 const opSettings = () => {
 
@@ -406,6 +449,26 @@ const opSettings = () => {
         }
     }
     gPreviousPlusMaxSpeed = gIS.plusMaxSpeed;
+
+    // connect Cubes 1
+    if( gIS.connectCube1 === 1 ){
+        if( gPreviousConnectCube1 === 0 ){
+            if( document.getElementById( "btConnectCube1" ).disabled === false ){
+                gCubes.head = connectNewCube();
+            }
+        }
+    }
+    gPreviousConnectCube1 = gIS.connectCube1;
+
+    // connect Cubes 2
+    if( gIS.connectCube2 === 1 ){
+        if( gPreviousConnectCube2 === 0 ){
+            if( document.getElementById( "btConnectCube2" ).disabled === false ){
+                gCubes.tail = connectNewCube();
+            }
+        }
+    }
+    gPreviousConnectCube2 = gIS.connectCube2;
 
 }
 
@@ -477,7 +540,11 @@ const opRotationRightWheel = () => {
 const opMove = () => {
 
     // Omni-direction logic. See https://qiita.com/tetunori_lego/items/37477c40b16f8eab384f in detail.
-    gArrowAngle = -1 * Math.round( 4 * Math.atan2( gIS.yAxisMove, gIS.xAxisMove) / Math.PI ) * Math.PI/4;
+    if( gIS.analogOmniMoveDisable === 1 ){
+        gArrowAngle = -1 * Math.round( 4 * Math.atan2( gIS.yAxisMove, gIS.xAxisMove) / Math.PI ) * Math.PI/4;
+    }else{
+        gArrowAngle = -1 * Math.atan2( gIS.yAxisMove, gIS.xAxisMove);
+    }
     // console.log( "move. gArrowAngle is " + gArrowAngle );
     gRotationPoint = undefined;
 
@@ -574,13 +641,8 @@ const moveOmniDirection = () => {
     let moveSpeedUpRightDownLeft;
     let moveSpeedUpLeftDownRight;
 
-    if( 0 /* for more analog move */ ){
-        moveSpeedUpRightDownLeft = -1 * Math.round( magnitude * Math.sin( Math.atan2( gIS.yAxisMove, gIS.xAxisMove ) - Math.PI / 4 ) );
-        moveSpeedUpLeftDownRight = -1 * Math.round( magnitude * Math.sin( Math.atan2( gIS.yAxisMove, gIS.xAxisMove ) + Math.PI / 4 ) );
-    }else{
-        moveSpeedUpRightDownLeft = -1 * Math.round( magnitude * Math.sin( gArrowAngle + Math.PI / 4 ) );
-        moveSpeedUpLeftDownRight = -1 * Math.round( magnitude * Math.sin( gArrowAngle - Math.PI / 4 ) );
-    }
+    moveSpeedUpRightDownLeft = -1 * Math.round( magnitude * Math.sin( gArrowAngle + Math.PI / 4 ) );
+    moveSpeedUpLeftDownRight = -1 * Math.round( magnitude * Math.sin( gArrowAngle - Math.PI / 4 ) );
 
     setMotorSpeed( gCubes.head, moveSpeedUpLeftDownRight, moveSpeedUpRightDownLeft );
     setMotorSpeed( gCubes.tail, moveSpeedUpRightDownLeft, moveSpeedUpLeftDownRight );
@@ -789,6 +851,18 @@ const drawArrow = ( context, angle, canvas ) => {
     const h = halfSize = SQUARE_SIZE / 2;
     const q = quarterSize = SQUARE_SIZE / 4;
 
+    // Save context setting
+    ctx.save();
+    if( gIS.analogOmniMoveDisable === 1 ){
+        const FRAME_SQUARE_SIZE = 120;
+        const OFFSET_X = 1;
+        ctx.strokeStyle = "rgba( 255, 0, 0, 1.0 )"
+        ctx.lineWidth = 4;
+        ctx.strokeRect( canvas.width/2 - FRAME_SQUARE_SIZE/2 + OFFSET_X, canvas.height/2 - FRAME_SQUARE_SIZE/2, 
+            FRAME_SQUARE_SIZE, FRAME_SQUARE_SIZE );
+    }
+
+
     // Translation and rotation
     ctx.translate( canvas.width/2 ,canvas.height/2 );
     ctx.rotate( angle );
@@ -809,6 +883,7 @@ const drawArrow = ( context, angle, canvas ) => {
 
     // Reset translation/scale.
     ctx.setTransform( 1, 0, 0, 1, 0, 0 );
+    ctx.restore();
 
 }
 
