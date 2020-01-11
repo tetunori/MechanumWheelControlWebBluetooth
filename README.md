@@ -46,23 +46,23 @@ This software is released under the MIT License, see LICENSE.
 Tetsunori NAKAYAMA.
 
 # References
-toio™
+toio™  
 https://toio.io/
 
-toio™Core Cube Specification
+toio™Core Cube Specification  
 https://toio.github.io/toio-spec/
 
-HTML5 Gamepad Specification
+HTML5 Gamepad Specification  
 https://www.w3.org/TR/gamepad/
 
 HTML5 Gamepad Tester  
 https://html5gamepad.com/  
 
-Arrow in canvas
+Arrow in canvas  
 http://www.inazumatv.com/contents/archives/7093
 
-Icon
+Icon  
 https://material.io/resources/icons/
 
-UI parts
+UI parts  
 https://www.muicss.com/
